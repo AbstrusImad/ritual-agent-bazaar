@@ -22,6 +22,29 @@
   animation: none !important;
 }
 
+/* Landing: museum light sweep + CTA orbiting ring */
+.animate-lightsweep {
+  animation: lightsweep 9s ease-in-out infinite;
+}
+@keyframes lightsweep {
+  0% { transform: translateX(-90%) skewX(-14deg); }
+  55% { transform: translateX(340%) skewX(-14deg); }
+  100% { transform: translateX(340%) skewX(-14deg); }
+}
+.animate-orbit {
+  animation: spinslow 6.5s linear infinite;
+}
+:root[data-motion="off"] .animate-lightsweep,
+:root[data-motion="off"] .animate-orbit {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-lightsweep,
+  .animate-orbit {
+    animation: none !important;
+  }
+}
+
 /* SVG-space animations (transform-box makes rotation orbit the shape center) */
 .svg-spin {
   transform-box: fill-box;
