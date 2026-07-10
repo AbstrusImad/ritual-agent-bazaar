@@ -18,15 +18,23 @@ const modes = ["Simulation Only", "Active Deployment"];
 
 export function RentAgentModal({ agent }: { agent: Agent }) {
   const listing = agent as BazaarListing;
-  const { closeOverlay, pushToast } = useApp();
+  const { closeOverlay, pushToast, address } = useApp();
   const { rent } = useBazaarActions();
   const [days, setDays] = useState(30);
   const [mode, setMode] = useState("Simulation Only");
   const [pending, setPending] = useState(false);
+  const isOwn = Boolean(
+    address && listing.creatorAddress && listing.creatorAddress.toLowerCase() === address.toLowerCase(),
+  );
 
   async function confirmRent() {
     if (!listing.listingId) {
       pushToast("This agent is not an on-chain listing.", "ruby");
+      return;
+    }
+    if (isOwn) {
+      // The contract reverts SelfRentNotAllowed — save the user the failed tx.
+      pushToast("You created this agent — you can't rent your own listing.", "gold");
       return;
     }
     setPending(true);

@@ -16,7 +16,7 @@ type Tab = "Overview" | "Capabilities" | "Usage" | "Reviews";
 const tabs: Tab[] = ["Overview", "Capabilities", "Usage", "Reviews"];
 
 export function AgentInspectOverlay({ agent }: { agent: Agent }) {
-  const { closeOverlay, openOverlay, pushToast, isFavorite, toggleFavorite, reloadListings } = useApp();
+  const { closeOverlay, openOverlay, pushToast, isFavorite, toggleFavorite, reloadListings, address } = useApp();
   const { rate } = useBazaarActions();
   const listing = agent as BazaarListing;
   const [tab, setTab] = useState<Tab>("Overview");
@@ -25,6 +25,11 @@ export function AgentInspectOverlay({ agent }: { agent: Agent }) {
   const [rating, setRating] = useState(false);
   const tokens = themeTokens[agent.theme];
   const saved = isFavorite(agent.name);
+  // Your own listing: the contract rejects self-rent (SelfRentNotAllowed),
+  // so the Rent action is hidden entirely for the creator.
+  const isOwn = Boolean(
+    address && listing.creatorAddress && listing.creatorAddress.toLowerCase() === address.toLowerCase(),
+  );
 
   useEffect(() => setTab("Overview"), [agent.name]);
 
@@ -62,8 +67,13 @@ export function AgentInspectOverlay({ agent }: { agent: Agent }) {
           style={{ background: `radial-gradient(80% 60% at 50% 30%, ${tokens.glow}, transparent 75%)` }}
         >
           <CapsulePreview theme={agent.theme} size="lg" />
-          <div className="text-center">
+          <div className="flex flex-col items-center gap-1.5 text-center">
             <p className="text-xs uppercase tracking-[0.16em] text-champagne/70">{agent.creator}</p>
+            {isOwn ? (
+              <span className="rounded-full border border-emerald/40 bg-emerald/10 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.14em] text-emerald">
+                Your listing
+              </span>
+            ) : null}
           </div>
         </div>
 
@@ -181,10 +191,12 @@ export function AgentInspectOverlay({ agent }: { agent: Agent }) {
             </AnimatePresence>
           </div>
 
-          {/* Actions */}
-          <div className="mt-5 grid grid-cols-4 gap-2">
+          {/* Actions — Rent is hidden on your own listing (contract rejects self-rent) */}
+          <div className={cn("mt-5 grid gap-2", isOwn ? "grid-cols-3" : "grid-cols-4")}>
             <GlassButton size="sm" variant="gold" icon={<Copy className="h-3.5 w-3.5" />} onClick={() => openOverlay("clone", agent)}>Clone</GlassButton>
-            <GlassButton size="sm" variant="emerald" icon={<KeyRound className="h-3.5 w-3.5" />} onClick={() => openOverlay("rent", agent)}>Rent</GlassButton>
+            {!isOwn ? (
+              <GlassButton size="sm" variant="emerald" icon={<KeyRound className="h-3.5 w-3.5" />} onClick={() => openOverlay("rent", agent)}>Rent</GlassButton>
+            ) : null}
             <GlassButton size="sm" variant="primary" icon={<Rocket className="h-3.5 w-3.5" />} onClick={() => openOverlay("deploy", agent)}>Deploy</GlassButton>
             <GlassButton
               size="sm"
