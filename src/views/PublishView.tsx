@@ -263,42 +263,39 @@ export function PublishView() {
         </div>
       </div>
 
-      {/* Confirm modal */}
-      <AnimatePresence>
-        {confirmOpen ? (
+      {/* Confirm modal — mounts with an enter animation, unmounts instantly on
+          close (no AnimatePresence: a stuck exit would block all clicks). */}
+      {confirmOpen ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-[70] grid place-items-center bg-black/70 p-4 backdrop-blur-md"
+          onClick={() => setConfirmOpen(false)}
+        >
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[70] grid place-items-center bg-black/70 p-4 backdrop-blur-md"
-            onClick={() => setConfirmOpen(false)}
+            initial={{ opacity: 0, y: 20, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            onClick={(event) => event.stopPropagation()}
+            className="glass w-[380px] max-w-[90vw] rounded-3xl border border-gold/40 p-6 shadow-goldglow"
           >
-            <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 16, scale: 0.97 }}
-              onClick={(event) => event.stopPropagation()}
-              className="glass w-[380px] max-w-[90vw] rounded-3xl border border-gold/40 p-6 shadow-goldglow"
-            >
-              <h3 className="font-display text-xl text-ivory">Publish Agent to Bazaar</h3>
-              <div className="mt-4 space-y-2 border-t border-gold/15 pt-4 text-sm">
-                <Row label="Agent" value={name} />
-                <Row label="Category" value={category} />
-                <Row label="Pricing" value={monthlyPrice} />
-                <Row label="Visibility" value="Public" />
-              </div>
-              <div className="mt-5 flex justify-end gap-2">
-                <GlassButton size="sm" variant="ghost" onClick={() => setConfirmOpen(false)}>
-                  Cancel
-                </GlassButton>
-                <GlassButton size="sm" variant="primary" onClick={() => void confirmPublish()}>
-                  {pending ? "Publishing..." : "Confirm Publish"}
-                </GlassButton>
-              </div>
-            </motion.div>
+            <h3 className="font-display text-xl text-ivory">Publish Agent to Bazaar</h3>
+            <div className="mt-4 space-y-2 border-t border-gold/15 pt-4 text-sm">
+              <Row label="Agent" value={name} />
+              <Row label="Category" value={category} />
+              <Row label="Pricing" value={monthlyPrice} />
+              <Row label="Visibility" value="Public" />
+            </div>
+            <div className="mt-5 flex justify-end gap-2">
+              <GlassButton size="sm" variant="ghost" onClick={() => setConfirmOpen(false)}>
+                Cancel
+              </GlassButton>
+              <GlassButton size="sm" variant="primary" onClick={() => void confirmPublish()}>
+                {pending ? "Publishing..." : "Confirm Publish"}
+              </GlassButton>
+            </div>
           </motion.div>
-        ) : null}
-      </AnimatePresence>
+        </motion.div>
+      ) : null}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ChevronDown, LogOut, Settings, User, Vault, Wallet } from "lucide-react";
 import { useApp } from "../store/AppContext";
 
@@ -51,14 +51,14 @@ export function WalletChip() {
         <ChevronDown className={`h-3.5 w-3.5 text-champagne/70 transition-transform ${open ? "rotate-180" : ""}`} />
       </motion.button>
 
-      <AnimatePresence>
-        {open ? (
-          <>
-            <div className="fixed inset-0 z-40" onClick={close} />
+      {/* No AnimatePresence: the full-screen click-away layer must unmount
+          instantly — if it ever lingered mid-exit it would block every click. */}
+      {open ? (
+        <>
+          <div className="fixed inset-0 z-40" onClick={close} />
             <motion.div
               initial={{ opacity: 0, y: -8, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.97 }}
               className="glass absolute right-0 top-12 z-50 w-64 rounded-2xl border border-gold/40 p-4 shadow-goldglow"
             >
               <p className="text-[10px] uppercase tracking-[0.18em] text-silver/50">Builder Profile</p>
@@ -80,9 +80,8 @@ export function WalletChip() {
                 <MenuItem icon={LogOut} label="Disconnect" onClick={() => { disconnectWallet(); pushToast("Wallet disconnected.", "ruby"); close(); }} />
               </div>
             </motion.div>
-          </>
-        ) : null}
-      </AnimatePresence>
+        </>
+      ) : null}
     </div>
   );
 }

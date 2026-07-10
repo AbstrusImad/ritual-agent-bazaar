@@ -23,7 +23,9 @@ export function ToastStack() {
             exit={{ opacity: 0, x: 40, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 260, damping: 22 }}
             className={cn(
-              "glass pointer-events-auto flex items-center gap-2.5 rounded-full border px-4 py-2.5 text-sm shadow-goldglow",
+              // pointer-events stay OFF: toasts are informational, and an
+              // interactive pill stuck mid-exit would invisibly block the dock.
+              "glass flex items-center gap-2.5 rounded-full border px-4 py-2.5 text-sm shadow-goldglow",
               toneClass[toast.tone],
             )}
           >
