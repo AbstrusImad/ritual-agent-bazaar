@@ -1,0 +1,15 @@
+node_modules/
+dist/
+*.tsbuildinfo
+*.log
+.ghpages/
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+
+contracts/out/
+contracts/cache/
+contracts/lib/
+contracts/broadcast/
